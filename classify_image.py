@@ -8,12 +8,6 @@ import tensorflow as tf
 from numpy import unique
 from numpy import argmax
 from tensorflow.keras.datasets.mnist import load_data
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Conv2D
-from tensorflow.keras.layers import MaxPool2D
-from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Dropout
 import os
 import matplotlib.pyplot as plt
 
@@ -41,12 +35,12 @@ def plot_graphs(f, history, string):
     plt.show()
 
 #initialize parameters
-epochs = 10
+epochs = 30
 batch_size= 128
 optimizer = 'adam'
 loss = 'sparse_categorical_crossentropy'
 met = 'accuracy'
-
+patience = 3 # early stopping
 
 # load dataset
 (x_train, y_train), (x_test, y_test) = load_data()
@@ -75,20 +69,25 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
 model = create_model()
 
 # Save the entire model as a SavedModel.
-my_model_path = os.path.dirname('saved_model/my_model')
-model.save(my_model_path) 
+#my_model_path = os.path.dirname('saved_model/my_model')
+#model.save(my_model_path) 
 
 #compile model
 model.compile(optimizer=optimizer, loss = loss, metrics=[met])
 
+#configure early stopping
+es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience = patience)
+
 #fit the mdoel
-history = model.fit(x_train, y_train, validation_data= (x_test,y_test), epochs=epochs, batch_size=batch_size, callbacks=[cp_callback],verbose=2)
+history = model.fit(x_train, y_train, validation_data= (x_test,y_test), epochs=epochs, batch_size=batch_size, callbacks=[es],verbose=2)
 
 #plot 
 f1 = plt.figure()
 plot_graphs(f1,history, "accuracy")
 f2 = plt.figure()
 plot_graphs(f2,history, "loss")
+
+
 
 # =============================================================================
 # #load checkpoint (load weights)

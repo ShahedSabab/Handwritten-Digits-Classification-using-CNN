@@ -3,6 +3,7 @@ Classification of the handwritten digits (0-9) has been performed using CNN. The
 
 • Tensorflow 2.0 is used.<br/>
 • Dropout layer has been added to reduce overfitting.<br/>
+• Earlystopping is performed. <br/>
 • 99% accuracy is achieved.<br/>
 
 # Performance
